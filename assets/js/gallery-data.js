@@ -4,6 +4,30 @@ const defaultCategoryNames = {
     'clay-accessories': 'Clay Accessories',
 };
 
+const cloudinaryBaseUrl = 'https://res.cloudinary.com/drsvgxp3u/image/upload/';
+
+const cloudinaryCategoryFolders = {
+    'art-commissions': 'gallery/painting',
+    'face-painting': 'gallery/face-painting',
+    'clay-accessories': 'gallery/clay',
+};
+
+function getCloudinaryImageUrl(category, filename) {
+    return `${cloudinaryBaseUrl}${cloudinaryCategoryFolders[category]}/${filename}`;
+}
+
+function resolveArtworkImage(item) {
+    if (!item.image?.startsWith('assets/images/gallery/')) {
+        return item;
+    }
+
+    const filename = item.image.split('/').pop();
+    return {
+        ...item,
+        image: getCloudinaryImageUrl(item.category, filename),
+    };
+}
+
 const defaultGalleryData = [
     {
         category: 'art-commissions',
@@ -11,7 +35,7 @@ const defaultGalleryData = [
         medium: 'Hand-painted canvas & natural fibers',
         year: '2026',
         description: 'A wearable composition that balances warm tones and subtle movement.',
-        image: 'assets/images/gallery/gallery-01.svg',
+        image: getCloudinaryImageUrl('art-commissions', 'gallery-01.svg'),
     },
     {
         category: 'art-commissions',
@@ -19,7 +43,7 @@ const defaultGalleryData = [
         medium: 'Mixed media on textile',
         year: '2025',
         description: 'An intimate portrait of texture, color, and quietly luminous form.',
-        image: 'assets/images/gallery/gallery-02.svg',
+        image: getCloudinaryImageUrl('art-commissions', 'gallery-02.svg'),
     },
     {
         category: 'face-painting',
@@ -27,7 +51,7 @@ const defaultGalleryData = [
         medium: 'Face painting palette & skin-safe pigments',
         year: '2025',
         description: 'Soft blooms designed for portraits, performance, and elegant movement.',
-        image: 'assets/images/gallery/gallery-03.svg',
+        image: getCloudinaryImageUrl('face-painting', 'gallery-03.svg'),
     },
     {
         category: 'face-painting',
@@ -35,7 +59,7 @@ const defaultGalleryData = [
         medium: 'Skin-safe pigment & soft shading',
         year: '2024',
         description: 'A refined face painting study built for editorial and performance.',
-        image: 'assets/images/gallery/gallery-04.svg',
+        image: getCloudinaryImageUrl('face-painting', 'gallery-04.svg'),
     },
     {
         category: 'clay-accessories',
@@ -43,7 +67,7 @@ const defaultGalleryData = [
         medium: 'Handcrafted clay and gold leaf',
         year: '2026',
         description: 'A sculptural accessory with a delicate finish and museum-ready aura.',
-        image: 'assets/images/gallery/gallery-05.svg',
+        image: getCloudinaryImageUrl('clay-accessories', 'gallery-05.svg'),
     },
     {
         category: 'clay-accessories',
@@ -51,7 +75,7 @@ const defaultGalleryData = [
         medium: 'Handcrafted clay with satin glaze',
         year: '2026',
         description: 'A subtle sculptural earring inspired by natural light and modern form.',
-        image: 'assets/images/gallery/gallery-06.svg',
+        image: getCloudinaryImageUrl('clay-accessories', 'gallery-06.svg'),
     },
 ];
 
@@ -69,7 +93,7 @@ function getSavedGalleryData() {
     try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed;
+            return parsed.map(resolveArtworkImage);
         }
     } catch (error) {
         console.warn('Failed to parse gallery data from localStorage.', error);

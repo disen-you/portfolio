@@ -201,7 +201,7 @@ async function uploadImageToCloudinary() {
     formData.append('file', file);
     formData.append('upload_preset', adminUploadPreset.value.trim());
     formData.append('public_id', generateRandomPublicId(document.getElementById('adminTitle').value.trim() || 'artwork', adminCategorySelect.value));
-    formData.append('folder', `${adminCategorySelect.value}`);
+    formData.append('folder', cloudinaryCategoryFolders[adminCategorySelect.value] || adminCategorySelect.value);
     formData.append('unique_filename', 'true');
 
     try {
