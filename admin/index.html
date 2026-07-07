@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>DISEN.YOU Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/footer.css">
+    <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
+</head>
+
+<body>
+    <div id="adminLoadingGate" class="admin-loading-gate">
+        <img src="../assets/images/logo/logo.png" alt="Disen.You logo" class="admin-loading-logo">
+    </div>
+
+    <div class="admin-login-wrap hidden" id="adminLoginView">
+        <section class="admin-panel card admin-login-card">
+            <p class="section-label">Artist Dashboard</p>
+            <h2>Log in</h2>
+            <p class="admin-note">Sign in with the account created in Firebase Authentication to manage the gallery.</p>
+            <form id="adminLoginForm" class="admin-login-form">
+                <label for="adminEmail">Email</label>
+                <input type="email" id="adminEmail" name="adminEmail" placeholder="you@disenyou.com" required autocomplete="username">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" name="adminPassword" placeholder="Password" required autocomplete="current-password">
+                <button type="submit" class="button button-primary">Log in</button>
+                <p id="adminLoginStatus" class="form-note"></p>
+            </form>
+        </section>
+    </div>
+
+    <div id="adminDashboardView" class="hidden">
+        <header class="admin-topbar">
+            <div class="logo">
+                <img src="../assets/images/logo/logo.png" alt="Disen.You logo">
+                <span>DISEN.YOU Admin</span>
+            </div>
+            <nav class="admin-tabs" id="adminTabs">
+                <button class="admin-tab-button active" data-tab="overview">Overview</button>
+                <button class="admin-tab-button" data-tab="upload">Upload</button>
+                <button class="admin-tab-button" data-tab="artworks">Artworks</button>
+                <button class="admin-tab-button" data-tab="categories">Categories</button>
+            </nav>
+            <div class="admin-topbar-user">
+                <span id="adminUserEmail" class="admin-note"></span>
+                <button id="adminLogout" class="button button-secondary">Log out</button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <section id="tab-overview" class="admin-tab-panel">
+                <h2>Overview</h2>
+                <div class="stat-grid" id="dashboardStats"></div>
+            </section>
+
+            <section id="tab-upload" class="admin-tab-panel hidden">
+                <h2>Upload new artwork</h2>
+                <p class="admin-note">Drag and drop images or videos, or use the file picker. Each file gets its own title and category before uploading — refine medium, year, and description afterward in the Artworks tab.</p>
+
+                <label for="uploadDefaultCategory">Category for new files</label>
+                <select id="uploadDefaultCategory"></select>
+
+                <div id="uploadDropzone" class="upload-dropzone">
+                    <p>Drag files here, or click to choose</p>
+                    <input type="file" id="uploadFileInput" accept="image/*,video/*" multiple hidden>
+                </div>
+
+                <div class="upload-queue-header">
+                    <p class="section-label">Upload queue</p>
+                    <button id="uploadClearCompleted" class="button button-secondary hidden">Clear completed</button>
+                </div>
+                <div id="uploadQueue" class="upload-queue"></div>
+            </section>
+
+            <section id="tab-artworks" class="admin-tab-panel hidden">
+                <h2>Artworks</h2>
+
+                <div class="artwork-toolbar">
+                    <input type="search" id="artworkSearch" placeholder="Search by title… (press / to focus)">
+                    <select id="artworkFilterCategory"><option value="all">All categories</option></select>
+                    <select id="artworkFilterYear"><option value="all">All years</option></select>
+                    <select id="artworkFilterSold">
+                        <option value="all">Sold: any</option>
+                        <option value="true">Sold</option>
+                        <option value="false">Available</option>
+                    </select>
+                    <select id="artworkFilterHidden">
+                        <option value="all">Visibility: any</option>
+                        <option value="false">Published</option>
+                        <option value="true">Hidden</option>
+                    </select>
+                    <select id="artworkSort">
+                        <option value="manual">Manual order</option>
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="updated">Recently updated</option>
+                        <option value="alphabetical">Alphabetical</option>
+                    </select>
+                </div>
+
+                <div id="bulkToolbar" class="bulk-toolbar hidden">
+                    <span id="bulkCount"></span>
+                    <button id="bulkHide" class="button button-secondary">Hide</button>
+                    <button id="bulkPublish" class="button button-secondary">Publish</button>
+                    <select id="bulkMoveSelect"></select>
+                    <button id="bulkMoveButton" class="button button-secondary">Move to category</button>
+                    <button id="bulkDelete" class="button button-secondary row-action-danger">Delete</button>
+                </div>
+
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th><input type="checkbox" id="artworkSelectAll"></th>
+                                <th>Preview</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Year</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="artworkTableBody"></tbody>
+                    </table>
+                </div>
+                <p id="artworkEmptyState" class="empty-state hidden"></p>
+            </section>
+
+            <section id="tab-categories" class="admin-tab-panel hidden">
+                <h2>Categories</h2>
+                <p class="admin-note">Every new category automatically gets its own Cloudinary folder. Renaming a category keeps its original folder, so existing media stays put.</p>
+
+                <form id="categoryCreateForm" class="category-create-form">
+                    <input type="text" id="categoryNewName" placeholder="New category name" required>
+                    <button type="submit" class="button button-primary">Add category</button>
+                </form>
+
+                <div id="categoryList" class="category-list"></div>
+                <p id="categoryEmptyState" class="empty-state hidden">No categories yet.</p>
+            </section>
+        </main>
+    </div>
+
+    <div id="artworkEditModal" class="admin-modal hidden">
+        <div class="admin-modal-backdrop"></div>
+        <div class="admin-modal-panel">
+            <button id="editClose" class="modal-close" aria-label="Close">&times;</button>
+            <h2>Edit artwork</h2>
+            <label for="editTitle">Title</label>
+            <input type="text" id="editTitle">
+            <label for="editCategory">Category</label>
+            <select id="editCategory"></select>
+            <label for="editMedium">Medium</label>
+            <input type="text" id="editMedium">
+            <label for="editYear">Year</label>
+            <input type="text" id="editYear">
+            <label for="editDescription">Description</label>
+            <textarea id="editDescription" rows="4"></textarea>
+            <label class="checkbox-label"><input type="checkbox" id="editFeatured"> Featured artwork for this category</label>
+            <p id="editSaveStatus" class="form-note"></p>
+        </div>
+    </div>
+
+    <div id="confirmDialog" class="admin-modal hidden">
+        <div class="admin-modal-backdrop"></div>
+        <div class="admin-modal-panel admin-modal-panel-sm">
+            <h2 id="confirmDialogTitle">Are you sure?</h2>
+            <p id="confirmDialogMessage"></p>
+            <div class="confirm-dialog-actions">
+                <button id="confirmDialogCancel" class="button button-secondary">Cancel</button>
+                <button id="confirmDialogConfirm" class="button button-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script type="module" src="../assets/js/admin.js"></script>
+</body>
+
+</html>

@@ -1,3 +1,9 @@
+const popupSeenKey = 'disenYouPopupSeen';
+
+function hasSeenPopupThisSession() {
+    return window.sessionStorage.getItem(popupSeenKey) === '1';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const popup = document.getElementById('artist-popup');
     const closeButton = document.getElementById('closePopup');
@@ -8,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.classList.add('hidden');
         body.classList.remove('no-scroll');
         body.classList.remove('loading');
+        window.sessionStorage.setItem(popupSeenKey, '1');
     };
 
     closeButton?.addEventListener('click', closePopup);

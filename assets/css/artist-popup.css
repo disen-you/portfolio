@@ -28,6 +28,7 @@
     position: relative;
     min-height: 520px;
     overflow: hidden;
+    background: linear-gradient(160deg, var(--bg) 0%, var(--white) 55%, var(--gold) 140%);
 }
 
 .popup-visual.popup-restaurant img {
