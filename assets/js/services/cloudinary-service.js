@@ -33,12 +33,14 @@ export function uploadToCloudinary({ file, folder, title, category, resourceType
     const publicId = generateRandomPublicId(title, category);
     const endpoint = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/${resourceType}/upload`;
 
+    // Note: `unique_filename` is rejected by Cloudinary's unsigned-upload endpoint (it's not in
+    // the allowed parameter list for unsigned requests). Not needed anyway — generateRandomPublicId
+    // already guarantees a unique public_id per upload.
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', cloudinaryConfig.uploadPreset);
     formData.append('public_id', publicId);
     formData.append('folder', folder);
-    formData.append('unique_filename', 'true');
 
     const promise = new Promise((resolve, reject) => {
         xhr.open('POST', endpoint);
